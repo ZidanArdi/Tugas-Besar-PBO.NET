@@ -19,10 +19,19 @@ namespace Tugas_Besar_PBO.NET.view
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            timer1.Stop(); // Hentikan timer agar tidak berulang
-            LoginForm login = new LoginForm();
-            login.Show();
-            this.Hide();
+
+            // Menambah nilai ProgressBar sebesar 5 setiap Tick, ProgressBar berfungsi sebagai indikator proses loading
+            progressBar1.Value += 5;
+
+            // Mengecek apakah ProgressBar sudah mencapai nilai maksimum (100)
+            if (progressBar1.Value == 100)
+            {
+                // Menghentikan dan membersihkan Timer agar tidak berjalan lagi
+                timer1.Dispose();
+
+                // Menutup Form StartUp (Splash Screen)
+                Close();
+            }
         }
     }
 }

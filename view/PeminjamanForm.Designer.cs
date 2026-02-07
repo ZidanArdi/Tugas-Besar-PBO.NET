@@ -140,6 +140,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.RoyalBlue;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.Tanggal);
@@ -151,6 +152,7 @@
             this.Controls.Add(this.lblBuku);
             this.Controls.Add(this.lblNPM);
             this.Controls.Add(this.txtNPM);
+            this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.Name = "PeminjamanForm";
             this.Text = "PeminjamanForm";
             this.Load += new System.EventHandler(this.PeminjamanForm_Load);

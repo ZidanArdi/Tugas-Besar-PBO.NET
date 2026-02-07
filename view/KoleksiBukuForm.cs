@@ -10,6 +10,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tugas_Besar_PBO.NET.Database;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System.IO;
+
 
 namespace Tugas_Besar_PBO.NET.view
 {
@@ -214,6 +218,58 @@ namespace Tugas_Besar_PBO.NET.view
             LoadBuku();
         }
 
+        private void btnExportExcel_Click(object sender, EventArgs e)
+        {
+            if (dgvBuku.Rows.Count == 0)
+            {
+                MessageBox.Show("Data buku masih kosong!");
+                return;
+            }
 
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Excel File (*.xlsx)|*.xlsx";
+                sfd.FileName = "Data_Koleksi_Buku.xlsx";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    ExportToExcel(dgvBuku, sfd.FileName);
+                    MessageBox.Show("Export berhasil!");
+                }
+
+                void ExportToExcel(DataGridView dgv, string filePath)
+                {
+
+                   
+                    using (ExcelPackage package = new ExcelPackage())
+                    {
+                        ExcelWorksheet ws = package.Workbook.Worksheets.Add("Koleksi Buku");
+
+                        // HEADER
+                        for (int i = 0; i < dgv.Columns.Count; i++)
+                        {
+                            ws.Cells[1, i + 1].Value = dgv.Columns[i].HeaderText;
+                            ws.Cells[1, i + 1].Style.Font.Bold = true;
+                        }
+
+                        // DATA
+                        for (int i = 0; i < dgv.Rows.Count; i++)
+                        {
+                            for (int j = 0; j < dgv.Columns.Count; j++)
+                            {
+                                ws.Cells[i + 2, j + 1].Value =
+                                    dgv.Rows[i].Cells[j].Value?.ToString();
+                            }
+                        }
+
+                        ws.Cells.AutoFitColumns();
+
+                        FileInfo fi = new FileInfo(filePath);
+                        package.SaveAs(fi);
+                    }
+                }
+
+            }
+        }
     }
 }
