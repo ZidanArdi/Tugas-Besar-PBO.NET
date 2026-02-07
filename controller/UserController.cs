@@ -38,7 +38,7 @@ namespace Tugas_Besar_PBO.NET.controller
                     return result?.ToString(); // Mengembalikan role (mahasiswa/admin) jika ditemukan
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex)    
             {
                 System.Windows.Forms.MessageBox.Show("Error Database: " + ex.Message);
                 return null;

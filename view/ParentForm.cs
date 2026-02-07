@@ -85,12 +85,12 @@ namespace Tugas_Besar_PBO.NET
             if (role == "admin")
             {
                 menuDataBuku.Enabled = true;
-                menuTransaksi.Enabled = true;
+                peminjamanToolStripMenuItem.Enabled = true;
             }
             else
             {
                 menuDataBuku.Enabled = true;
-                menuTransaksi.Enabled = false; // Mahasiswa tidak bisa transaksi
+                peminjamanToolStripMenuItem.Enabled = true; // Mahasiswa tidak bisa transaksi
             }
         }
 
@@ -118,6 +118,31 @@ namespace Tugas_Besar_PBO.NET
 
             }
 
+        }
+        PeminjamanForm pf;
+        Pengembalian_Buku kf;
+
+        private void peminjamanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (pf == null || pf.IsDisposed)
+                pf = new PeminjamanForm();
+
+            pf.Show();
+            pf.BringToFront();
+            pf.MdiParent = this;
+            pf.StartPosition = FormStartPosition.CenterScreen;
+        }
+        
+
+        private void pengembalianToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (kf == null || kf.IsDisposed)
+                kf = new Pengembalian_Buku();
+
+            kf.Show();
+            kf.BringToFront();
+            kf.MdiParent = this;
+            kf.StartPosition = FormStartPosition.CenterScreen;
         }
     }
 }

@@ -36,7 +36,7 @@
             this.dataBukuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuDataBuku = new System.Windows.Forms.ToolStripMenuItem();
             this.transaksiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuTransaksi = new System.Windows.Forms.ToolStripMenuItem();
+            this.peminjamanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pengembalianToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -50,7 +50,8 @@
             this.transaksiToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(910, 28);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(682, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -60,20 +61,20 @@
             this.menuExit,
             this.menuLogin});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // menuExit
             // 
             this.menuExit.Name = "menuExit";
-            this.menuExit.Size = new System.Drawing.Size(224, 26);
+            this.menuExit.Size = new System.Drawing.Size(104, 22);
             this.menuExit.Text = "Exit";
             this.menuExit.Click += new System.EventHandler(this.menuExit_Click);
             // 
             // menuLogin
             // 
             this.menuLogin.Name = "menuLogin";
-            this.menuLogin.Size = new System.Drawing.Size(224, 26);
+            this.menuLogin.Size = new System.Drawing.Size(104, 22);
             this.menuLogin.Text = "Login";
             this.menuLogin.Click += new System.EventHandler(this.menuLogin_Click);
             // 
@@ -82,46 +83,49 @@
             this.dataBukuToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuDataBuku});
             this.dataBukuToolStripMenuItem.Name = "dataBukuToolStripMenuItem";
-            this.dataBukuToolStripMenuItem.Size = new System.Drawing.Size(91, 24);
+            this.dataBukuToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.dataBukuToolStripMenuItem.Text = "Data Buku";
             // 
             // menuDataBuku
             // 
             this.menuDataBuku.Name = "menuDataBuku";
-            this.menuDataBuku.Size = new System.Drawing.Size(224, 26);
+            this.menuDataBuku.Size = new System.Drawing.Size(180, 22);
             this.menuDataBuku.Text = "Koleksi Buku";
             this.menuDataBuku.Click += new System.EventHandler(this.menuDataBuku_Click);
             // 
             // transaksiToolStripMenuItem
             // 
             this.transaksiToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuTransaksi,
+            this.peminjamanToolStripMenuItem,
             this.pengembalianToolStripMenuItem});
             this.transaksiToolStripMenuItem.Name = "transaksiToolStripMenuItem";
-            this.transaksiToolStripMenuItem.Size = new System.Drawing.Size(82, 24);
+            this.transaksiToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
             this.transaksiToolStripMenuItem.Text = "Transaksi";
             // 
-            // menuTransaksi
+            // peminjamanToolStripMenuItem
             // 
-            this.menuTransaksi.Name = "menuTransaksi";
-            this.menuTransaksi.Size = new System.Drawing.Size(186, 26);
-            this.menuTransaksi.Text = "Peminjaman";
+            this.peminjamanToolStripMenuItem.Name = "peminjamanToolStripMenuItem";
+            this.peminjamanToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.peminjamanToolStripMenuItem.Text = "Peminjaman";
+            this.peminjamanToolStripMenuItem.Click += new System.EventHandler(this.peminjamanToolStripMenuItem_Click);
             // 
             // pengembalianToolStripMenuItem
             // 
             this.pengembalianToolStripMenuItem.Name = "pengembalianToolStripMenuItem";
-            this.pengembalianToolStripMenuItem.Size = new System.Drawing.Size(186, 26);
+            this.pengembalianToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pengembalianToolStripMenuItem.Text = "Pengembalian";
+            this.pengembalianToolStripMenuItem.Click += new System.EventHandler(this.pengembalianToolStripMenuItem_Click_1);
             // 
             // ParentForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(910, 823);
+            this.ClientSize = new System.Drawing.Size(682, 609);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "ParentForm";
             this.Text = "Perpustakaan Digital";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ParentForm_FormClosing);
@@ -141,7 +145,7 @@
         private System.Windows.Forms.ToolStripMenuItem transaksiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuExit;
         private System.Windows.Forms.ToolStripMenuItem menuDataBuku;
-        private System.Windows.Forms.ToolStripMenuItem menuTransaksi;
+        private System.Windows.Forms.ToolStripMenuItem peminjamanToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuLogin;
         private System.Windows.Forms.ToolStripMenuItem pengembalianToolStripMenuItem;
     }
