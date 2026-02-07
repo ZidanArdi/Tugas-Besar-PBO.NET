@@ -18,6 +18,14 @@ namespace Tugas_Besar_PBO.NET.view
         {
             InitializeComponent();
             LoadPinjaman(); // ← panggil di sini
+            dgvPengembalian.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvPengembalian.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dgvPengembalian.Dock = DockStyle.Fill;
+            dgvPengembalian.ReadOnly = true;
+            dgvPengembalian.AllowUserToAddRows = false;
+            dgvPengembalian.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
+
         }
         decimal HitungDenda(DateTime tenggat, DateTime kembali)
         {
@@ -29,22 +37,28 @@ namespace Tugas_Besar_PBO.NET.view
         {
             using (MySqlConnection conn = Koneksi.GetConnection())
             {
-                string q = @"SELECT p.id_pinjam, 
-                                CONCAT(u.nama, ' - ', b.judul) AS info,
-                                p.tanggal_jatuh_tempo,
-                                p.id_buku
-                         FROM peminjaman p
-                         JOIN users u ON p.id_user = u.id_user
-                         JOIN buku b ON p.id_buku = b.id_buku
-                         WHERE p.status_pinjam = 'Dipinjam'";
+                string q = @"
+        SELECT 
+            p.id_pinjam,
+            CONCAT(u.nama_lengkap, ' - ', b.judul) AS info,
+            p.tanggal_tenggat
+        FROM peminjaman p
+        JOIN users u ON p.npm = u.npm
+        JOIN buku b ON p.id_buku = b.id_buku
+        WHERE p.status_pinjam = 'Dipinjam'
+        ";
 
                 MySqlDataAdapter da = new MySqlDataAdapter(q, conn);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
 
+                // 🔥 INI WAJIB BUAT NGILANGIN ABU-ABU
+                dgvPengembalian.DataSource = dt;
+
                 cbPinjam.DataSource = dt;
                 cbPinjam.DisplayMember = "info";
                 cbPinjam.ValueMember = "id_pinjam";
+                cbPinjam.SelectedIndex = -1;
             }
         }
         private void btnKembali_Click(object sender, EventArgs e)
@@ -77,20 +91,31 @@ namespace Tugas_Besar_PBO.NET.view
 
             conn.Close();
             MessageBox.Show("Pengembalian berhasil");
+
+            LoadPinjaman();
         }
 
         private void cbPinjam_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cbPinjam.SelectedIndex == -1) return;
 
-            // ambil tanggal tenggat dari row yang dipilih
             DataRowView row = (DataRowView)cbPinjam.SelectedItem;
-            DateTime tenggat = Convert.ToDateTime(row["tanggal_jatuh_tempo"]);
+            DateTime tenggat = Convert.ToDateTime(row["tanggal_tenggat"]);
 
             lblTenggat.Text = tenggat.ToString("dd-MM-yyyy");
 
-            // hitung denda otomatis
-            decimal denda = HitungDenda(tenggat, DateTime.Today);
+            decimal denda = HitungDenda(tenggat, dtKembali.Value);
+            txtDenda.Text = denda.ToString();
+        }
+
+        private void dtKembali_ValueChanged(object sender, EventArgs e)
+        {
+            if (cbPinjam.SelectedIndex == -1) return;
+
+            DataRowView row = (DataRowView)cbPinjam.SelectedItem;
+            DateTime tenggat = Convert.ToDateTime(row["tanggal_tenggat"]);
+
+            decimal denda = HitungDenda(tenggat, dtKembali.Value);
             txtDenda.Text = denda.ToString();
         }
     }

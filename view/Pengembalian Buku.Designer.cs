@@ -47,7 +47,7 @@
             // 
             this.cbPinjam.DisplayMember = "\"info\";";
             this.cbPinjam.FormattingEnabled = true;
-            this.cbPinjam.Location = new System.Drawing.Point(197, 219);
+            this.cbPinjam.Location = new System.Drawing.Point(197, 267);
             this.cbPinjam.Name = "cbPinjam";
             this.cbPinjam.Size = new System.Drawing.Size(121, 21);
             this.cbPinjam.TabIndex = 0;
@@ -56,15 +56,16 @@
             // 
             // dtKembali
             // 
-            this.dtKembali.Location = new System.Drawing.Point(536, 274);
+            this.dtKembali.Location = new System.Drawing.Point(536, 297);
             this.dtKembali.Name = "dtKembali";
             this.dtKembali.Size = new System.Drawing.Size(200, 20);
             this.dtKembali.TabIndex = 1;
-            this.dtKembali.Value = new System.DateTime(2026, 2, 7, 7, 16, 29, 0);
+            this.dtKembali.Value = new System.DateTime(2026, 2, 5, 0, 0, 0, 0);
+            this.dtKembali.ValueChanged += new System.EventHandler(this.dtKembali_ValueChanged);
             // 
             // txtDenda
             // 
-            this.txtDenda.Location = new System.Drawing.Point(197, 340);
+            this.txtDenda.Location = new System.Drawing.Point(197, 375);
             this.txtDenda.Name = "txtDenda";
             this.txtDenda.ReadOnly = true;
             this.txtDenda.Size = new System.Drawing.Size(121, 20);
@@ -77,16 +78,16 @@
             "Baik",
             "Rusak",
             "Hilang"});
-            this.cbKondisi.Location = new System.Drawing.Point(197, 274);
+            this.cbKondisi.Location = new System.Drawing.Point(197, 325);
             this.cbKondisi.Name = "cbKondisi";
             this.cbKondisi.Size = new System.Drawing.Size(121, 21);
             this.cbKondisi.TabIndex = 3;
             // 
             // btnKembali
             // 
-            this.btnKembali.Location = new System.Drawing.Point(536, 397);
+            this.btnKembali.Location = new System.Drawing.Point(536, 378);
             this.btnKembali.Name = "btnKembali";
-            this.btnKembali.Size = new System.Drawing.Size(150, 24);
+            this.btnKembali.Size = new System.Drawing.Size(167, 43);
             this.btnKembali.TabIndex = 4;
             this.btnKembali.Text = "Simpan pengembalian";
             this.btnKembali.UseVisualStyleBackColor = true;
@@ -97,7 +98,7 @@
             this.dgvPengembalian.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPengembalian.Location = new System.Drawing.Point(6, 19);
             this.dgvPengembalian.Name = "dgvPengembalian";
-            this.dgvPengembalian.Size = new System.Drawing.Size(764, 150);
+            this.dgvPengembalian.Size = new System.Drawing.Size(764, 216);
             this.dgvPengembalian.TabIndex = 5;
             // 
             // groupBox1
@@ -105,7 +106,7 @@
             this.groupBox1.Controls.Add(this.dgvPengembalian);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(776, 177);
+            this.groupBox1.Size = new System.Drawing.Size(776, 241);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Data Pengembalian";
@@ -113,7 +114,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(38, 274);
+            this.label1.Location = new System.Drawing.Point(38, 325);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(68, 13);
             this.label1.TabIndex = 7;
@@ -122,7 +123,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(38, 219);
+            this.label2.Location = new System.Drawing.Point(38, 267);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(83, 13);
             this.label2.TabIndex = 8;
@@ -131,7 +132,7 @@
             // lblTenggat
             // 
             this.lblTenggat.AutoSize = true;
-            this.lblTenggat.Location = new System.Drawing.Point(399, 277);
+            this.lblTenggat.Location = new System.Drawing.Point(393, 297);
             this.lblTenggat.Name = "lblTenggat";
             this.lblTenggat.Size = new System.Drawing.Size(85, 13);
             this.lblTenggat.TabIndex = 9;
@@ -140,7 +141,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(38, 347);
+            this.label4.Location = new System.Drawing.Point(38, 378);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(39, 13);
             this.label4.TabIndex = 10;
@@ -161,7 +162,6 @@
             this.Controls.Add(this.txtDenda);
             this.Controls.Add(this.dtKembali);
             this.Controls.Add(this.cbPinjam);
-            this.Enabled = false;
             this.Name = "Pengembalian_Buku";
             this.Text = "Pengembalian_Buku";
             ((System.ComponentModel.ISupportInitialize)(this.dgvPengembalian)).EndInit();

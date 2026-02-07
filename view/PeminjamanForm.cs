@@ -23,7 +23,37 @@ namespace Tugas_Besar_PBO.NET.view
         private void PeminjamanForm_Load(object sender, EventArgs e)
         {
             LoadBuku();
+            LoadPeminjaman(); // 🔥 tampilkan data
         }
+        void LoadPeminjaman()
+        {
+            using (MySqlConnection conn = Koneksi.GetConnection())
+            {
+                string query = @"
+        SELECT 
+            p.id_pinjam,
+            p.npm,
+            b.judul,
+            p.tanggal_pinjam,
+            p.tanggal_tenggat,
+            p.status_pinjam
+        FROM peminjaman p
+        JOIN buku b ON p.id_buku = b.id_buku
+        ORDER BY p.id_pinjam DESC";
+
+                MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                dgvPeminjaman.DataSource = dt;
+
+                // biar rapi
+                dgvPeminjaman.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                dgvPeminjaman.ReadOnly = true;
+                dgvPeminjaman.AllowUserToAddRows = false;
+            }
+        }
+
         void LoadBuku()
         {
             MySqlConnection conn = Koneksi.GetConnection();
@@ -68,6 +98,10 @@ namespace Tugas_Besar_PBO.NET.view
 
             conn.Close();
             MessageBox.Show("Peminjaman berhasil");
+
+            // 🔥 refresh tabel
+            LoadPeminjaman();
+
         }
     }
     
