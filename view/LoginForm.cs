@@ -19,6 +19,7 @@ namespace Tugas_Besar_PBO.NET.view
         public LoginForm()
         {
             InitializeComponent();
+            this.Icon = AppIcon.GetIcon();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -63,7 +64,7 @@ namespace Tugas_Besar_PBO.NET.view
             reg.StartPosition = FormStartPosition.CenterScreen;
             reg.Show();
 
-            this.Close(); // Menutup login saat pindah ke register agar tidak menumpuk
+            this.Hide(); // Menutup login saat pindah ke register agar tidak menumpuk
         }
 
         private void chkShowPass_CheckedChanged(object sender, EventArgs e)

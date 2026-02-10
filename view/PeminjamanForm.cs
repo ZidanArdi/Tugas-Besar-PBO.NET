@@ -1,108 +1,135 @@
-﻿using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Tugas_Besar_PBO.NET.Database;
+using OfficeOpenXml;
+using Tugas_Besar_PBO.NET.controller;
+using Tugas_Besar_PBO.NET.model;
 
 namespace Tugas_Besar_PBO.NET.view
 {
     public partial class PeminjamanForm : Form
     {
+        // ✅ Controller menangani semua logika, View hanya memanggil
+        private PeminjamanController peminjamanController = new PeminjamanController();
+        private BukuController bukuController = new BukuController();
+
         public PeminjamanForm()
         {
             InitializeComponent();
-
+            this.Icon = AppIcon.GetIcon();
         }
 
         private void PeminjamanForm_Load(object sender, EventArgs e)
         {
             LoadBuku();
-            LoadPeminjaman(); // 🔥 tampilkan data
+            LoadPeminjaman();
         }
+
+        // ===== LOAD DATA (memanggil Controller) =====
+
         void LoadPeminjaman()
         {
-            using (MySqlConnection conn = Koneksi.GetConnection())
-            {
-                string query = @"
-        SELECT 
-            p.id_pinjam,
-            p.npm,
-            b.judul,
-            p.tanggal_pinjam,
-            p.tanggal_tenggat,
-            p.status_pinjam
-        FROM peminjaman p
-        JOIN buku b ON p.id_buku = b.id_buku
-        ORDER BY p.id_pinjam DESC";
-
-                MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-
-                dgvPeminjaman.DataSource = dt;
-
-                // biar rapi
-                dgvPeminjaman.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                dgvPeminjaman.ReadOnly = true;
-                dgvPeminjaman.AllowUserToAddRows = false;
-            }
+            DataTable dt = peminjamanController.GetSemuaPeminjaman();
+            dgvPeminjaman.DataSource = dt;
         }
 
         void LoadBuku()
         {
-            MySqlConnection conn = Koneksi.GetConnection();
-            string query = "SELECT id_buku, judul FROM buku WHERE stok > 0";
-
-            MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-
+            DataTable dt = bukuController.GetBukuTersedia();
             cbBuku.DataSource = dt;
             cbBuku.DisplayMember = "judul";
             cbBuku.ValueMember = "id_buku";
-            cbBuku.SelectedIndex = -1; // penting
+            cbBuku.SelectedIndex = -1;
         }
+
+        // ===== EVENT HANDLERS =====
 
         private void btnPinjam_Click(object sender, EventArgs e)
         {
-            // 1️⃣ VALIDASI PILIH BUKU
+            // Validasi pilih buku
             if (cbBuku.SelectedValue == null)
             {
                 MessageBox.Show("Pilih buku terlebih dahulu!");
                 return;
             }
 
-            int idBuku = Convert.ToInt32(cbBuku.SelectedValue);
-            MySqlConnection conn = Koneksi.GetConnection();
-            conn.Open();
+            try
+            {
+                // ✅ Buat object Model, lalu kirim ke Controller
+                Peminjaman peminjaman = new Peminjaman
+                {
+                    NPM = txtNPM.Text,
+                    IdBuku = Convert.ToInt32(cbBuku.SelectedValue),
+                    TanggalPinjam = dtPinjam.Value,
+                    TanggalTenggat = dtTenggat.Value
+                };
 
-            string insert = "INSERT INTO peminjaman (npm, id_buku, tanggal_pinjam, tanggal_tenggat) " +
-                            "VALUES (@npm, @buku, @pinjam, @tenggat)";
-            MySqlCommand cmd = new MySqlCommand(insert, conn);
-            cmd.Parameters.AddWithValue("@npm", txtNPM.Text);
-            cmd.Parameters.AddWithValue("@buku", cbBuku.SelectedValue);
-            cmd.Parameters.AddWithValue("@pinjam", dtPinjam.Value);
-            cmd.Parameters.AddWithValue("@tenggat", dtTenggat.Value);
-            cmd.ExecuteNonQuery();
+                peminjamanController.PinjamBuku(peminjaman);
+                MessageBox.Show("Peminjaman berhasil");
 
-            string updateStok = "UPDATE buku SET stok = stok - 1 WHERE id_buku=@id";
-            MySqlCommand stokCmd = new MySqlCommand(updateStok, conn);
-            stokCmd.Parameters.AddWithValue("@id", cbBuku.SelectedValue);
-            stokCmd.ExecuteNonQuery();
+                // Refresh data
+                LoadPeminjaman();
+                LoadBuku();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
-            conn.Close();
-            MessageBox.Show("Peminjaman berhasil");
+        // ===== EXPORT EXCEL =====
 
-            // 🔥 refresh tabel
-            LoadPeminjaman();
+        private void btnExportExcel_Click(object sender, EventArgs e)
+        {
+            if (dgvPeminjaman.Rows.Count == 0)
+            {
+                MessageBox.Show("Data peminjaman masih kosong!");
+                return;
+            }
 
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Excel File (*.xlsx)|*.xlsx";
+                sfd.FileName = "Data_Peminjaman.xlsx";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    using (ExcelPackage package = new ExcelPackage())
+                    {
+                        ExcelWorksheet ws = package.Workbook.Worksheets.Add("Data Peminjaman");
+
+                        // HEADER
+                        for (int i = 0; i < dgvPeminjaman.Columns.Count; i++)
+                        {
+                            ws.Cells[1, i + 1].Value = dgvPeminjaman.Columns[i].HeaderText;
+                            ws.Cells[1, i + 1].Style.Font.Bold = true;
+                        }
+
+                        // DATA
+                        for (int i = 0; i < dgvPeminjaman.Rows.Count; i++)
+                        {
+                            for (int j = 0; j < dgvPeminjaman.Columns.Count; j++)
+                            {
+                                ws.Cells[i + 2, j + 1].Value =
+                                    dgvPeminjaman.Rows[i].Cells[j].Value?.ToString();
+                            }
+                        }
+
+                        ws.Cells.AutoFitColumns();
+                        FileInfo fi = new FileInfo(sfd.FileName);
+                        package.SaveAs(fi);
+                    }
+
+                    MessageBox.Show("Export berhasil!");
+                }
+            }
         }
     }
-    
 }

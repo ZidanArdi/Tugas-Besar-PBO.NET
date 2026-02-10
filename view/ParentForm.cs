@@ -18,6 +18,7 @@ namespace Tugas_Besar_PBO.NET
         public ParentForm()
         {
             InitializeComponent();
+            this.Icon = AppIcon.GetIcon();
         }
 
         private void ParentForm_FormClosing(object sender, FormClosingEventArgs e)

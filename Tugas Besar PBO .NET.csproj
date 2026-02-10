@@ -113,9 +113,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppIcon.cs" />
+    <Compile Include="controller\BukuController.cs" />
+    <Compile Include="controller\PeminjamanController.cs" />
     <Compile Include="controller\UserController.cs" />
     <Compile Include="Database\Koneksi.cs" />
     <Compile Include="model\Buku.cs" />
+    <Compile Include="model\Peminjaman.cs" />
     <Compile Include="model\User.cs" />
     <Compile Include="view\KoleksiBukuForm.cs">
       <SubType>Form</SubType>

@@ -1,55 +1,65 @@
-﻿using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Tugas_Besar_PBO.NET.Database;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using System.IO;
-
+using Tugas_Besar_PBO.NET.controller;
+using Tugas_Besar_PBO.NET.model;
 
 namespace Tugas_Besar_PBO.NET.view
 {
     public partial class KoleksiBukuForm : Form
     {
         private string _role;
+        private int idBukuTerpilih = 0;
+
+        // ✅ Controller menangani semua logika, View hanya memanggil
+        private BukuController bukuController = new BukuController();
 
         public KoleksiBukuForm(string role)
         {
             InitializeComponent();
+            this.Icon = AppIcon.GetIcon();
             dgvBuku.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvBuku.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            //TampilBuku();
             this._role = role;
         }
 
-        private void TampilBuku()
-        {
-            // Contoh data buku
-            //dataGridViewBuku.DataSource = controller.ShowBuku();
-        }
+        // ===== LOAD DATA (memanggil Controller) =====
 
         void LoadBuku()
         {
-            using (MySqlConnection conn = Koneksi.GetConnection())
+            dgvBuku.DataSource = bukuController.GetSemuaBuku();
+        }
+
+        void LoadKategori()
+        {
+            DataTable dt = bukuController.GetSemuaKategori();
+            cbKategori.DataSource = dt;
+            cbKategori.DisplayMember = "nama_kategori";
+            cbKategori.ValueMember = "id_kategori";
+            cbKategori.SelectedIndex = -1;
+        }
+
+        // ===== EVENT HANDLERS =====
+
+        private void KoleksiBukuForm_Load(object sender, EventArgs e)
+        {
+            LoadBuku();
+            LoadKategori();
+            if (_role != "admin")
             {
-                string q = @"SELECT b.id_buku, b.judul, b.penulis, b.penerbit,
-                            b.tahun_terbit, k.nama_kategori, b.stok
-                     FROM buku b
-                     JOIN kategori k ON b.id_kategori = k.id_kategori";
-
-                MySqlDataAdapter da = new MySqlDataAdapter(q, conn);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-
-                dgvBuku.DataSource = dt;
+                groupBox2.Visible = false;
+                dgvBuku.Top = groupBox2.Top;
+                dgvBuku.Height += groupBox2.Height;
+                this.Text = "Koleksi Buku (Mode View - Mahasiswa)";
             }
         }
 
@@ -66,91 +76,28 @@ namespace Tugas_Besar_PBO.NET.view
                 MessageBox.Show("Pilih kategori buku!");
                 return;
             }
-            using (MySqlConnection conn = Koneksi.GetConnection())
+
+            try
             {
-                conn.Open();
-                string insert = @"INSERT INTO buku
-        (judul, penulis, penerbit, tahun_terbit, id_kategori, stok)
-        VALUES (@j, @p, @pb, @t, @k, @s)";
+                // ✅ Buat object Model, lalu kirim ke Controller
+                Buku buku = new Buku
+                {
+                    Judul = txtJudul.Text,
+                    Penulis = txtPenulis.Text,
+                    Penerbit = txtPenerbit.Text,
+                    TahunTerbit = Convert.ToInt32(txtTahun.Text),
+                    IdKategori = Convert.ToInt32(cbKategori.SelectedValue),
+                    Stok = Convert.ToInt32(txtStok.Text)
+                };
 
-                MySqlCommand cmd = new MySqlCommand(insert, conn);
-                cmd.Parameters.AddWithValue("@j", txtJudul.Text);
-                cmd.Parameters.AddWithValue("@p", txtPenulis.Text);
-                cmd.Parameters.AddWithValue("@pb", txtPenerbit.Text);
-                cmd.Parameters.AddWithValue("@t", txtTahun.Text);
-                cmd.Parameters.AddWithValue("@k", cbKategori.SelectedValue);                // ID kategori
-                cmd.Parameters.AddWithValue("@s", Convert.ToInt32(txtStok.Text));
-
-                cmd.ExecuteNonQuery();
+                bukuController.TambahBuku(buku);
+                LoadBuku();
+                MessageBox.Show("Buku berhasil ditambahkan");
             }
-
-            LoadBuku();
-            MessageBox.Show("Buku berhasil ditambahkan");
-        }
-
-        private void KoleksiBukuForm_Load(object sender, EventArgs e)
-        {
-            LoadBuku();
-            LoadKategori();
-            if (_role != "admin")
+            catch (Exception ex)
             {
-                groupBox2.Visible = false;
-
-                dgvBuku.Top = groupBox2.Top;
-                dgvBuku.Height += groupBox2.Height;
-
-                this.Text = "Koleksi Buku (Mode View - Mahasiswa)";
+                MessageBox.Show(ex.Message);
             }
-        }
-        void LoadKategori()
-        {
-            using (MySqlConnection conn = Koneksi.GetConnection())
-            {
-                string q = "SELECT id_kategori, nama_kategori FROM kategori";
-                MySqlDataAdapter da = new MySqlDataAdapter(q, conn);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-
-                cbKategori.DataSource = dt;
-                cbKategori.DisplayMember = "nama_kategori";
-                cbKategori.ValueMember = "id_kategori";
-                cbKategori.SelectedIndex = -1;
-            }
-        }
-
-
-        int idBukuTerpilih = 0;
-        private void dataGridViewBuku_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                DataGridViewRow row = dgvBuku.Rows[e.RowIndex];
-                txtJudul.Text = row.Cells["judul"].Value.ToString();
-                txtPenulis.Text = row.Cells["penulis"].Value.ToString();
-                txtPenerbit.Text = row.Cells["penerbit"].Value.ToString();
-                txtTahun.Text = row.Cells["tahun_terbit"].Value.ToString();
-                txtStok.Text = row.Cells["stok"].Value.ToString();
-            }
-        }
-
-        private void btnRefresh_Click(object sender, EventArgs e)
-        {
-            LoadBuku();
-        }
-
-        private void dataGridViewBuku_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0) return;
-
-            DataGridViewRow row = dgvBuku.Rows[e.RowIndex];
-
-            idBukuTerpilih = Convert.ToInt32(row.Cells["id_buku"].Value);
-            txtJudul.Text = row.Cells["judul"].Value.ToString();
-            txtPenulis.Text = row.Cells["penulis"].Value.ToString();
-            txtPenerbit.Text = row.Cells["penerbit"].Value.ToString();
-            txtTahun.Text = row.Cells["tahun_terbit"].Value.ToString();
-            txtStok.Text = row.Cells["stok"].Value.ToString();
-            cbKategori.Text = row.Cells["nama_kategori"].Value.ToString();
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
@@ -161,32 +108,28 @@ namespace Tugas_Besar_PBO.NET.view
                 return;
             }
 
-            using (MySqlConnection conn = Koneksi.GetConnection())
+            try
             {
-                conn.Open();
-                string q = @"UPDATE buku SET 
-                        judul=@judul,
-                        penulis=@penulis,
-                        penerbit=@penerbit,
-                        tahun_terbit=@tahun,
-                        id_kategori=@kategori,
-                        stok=@stok
-                     WHERE id_buku=@id";
+                // ✅ Buat object Model, lalu kirim ke Controller
+                Buku buku = new Buku
+                {
+                    IdBuku = idBukuTerpilih,
+                    Judul = txtJudul.Text,
+                    Penulis = txtPenulis.Text,
+                    Penerbit = txtPenerbit.Text,
+                    TahunTerbit = Convert.ToInt32(txtTahun.Text),
+                    IdKategori = Convert.ToInt32(cbKategori.SelectedValue),
+                    Stok = Convert.ToInt32(txtStok.Text)
+                };
 
-                MySqlCommand cmd = new MySqlCommand(q, conn);
-                cmd.Parameters.AddWithValue("@judul", txtJudul.Text);
-                cmd.Parameters.AddWithValue("@penulis", txtPenulis.Text);
-                cmd.Parameters.AddWithValue("@penerbit", txtPenerbit.Text);
-                cmd.Parameters.AddWithValue("@tahun", txtTahun.Text);
-                cmd.Parameters.AddWithValue("@kategori", cbKategori.SelectedValue);
-                cmd.Parameters.AddWithValue("@stok", txtStok.Text);
-                cmd.Parameters.AddWithValue("@id", idBukuTerpilih);
-
-                cmd.ExecuteNonQuery();
+                bukuController.UpdateBuku(buku);
+                MessageBox.Show("Data berhasil diupdate");
+                LoadBuku();
             }
-
-            MessageBox.Show("Data berhasil diupdate");
-            LoadBuku();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -205,17 +148,47 @@ namespace Tugas_Besar_PBO.NET.view
 
             if (konfirmasi == DialogResult.No) return;
 
-            using (MySqlConnection conn = Koneksi.GetConnection())
+            try
             {
-                conn.Open();
-                string q = "DELETE FROM buku WHERE id_buku=@id";
-                MySqlCommand cmd = new MySqlCommand(q, conn);
-                cmd.Parameters.AddWithValue("@id", idBukuTerpilih);
-                cmd.ExecuteNonQuery();
+                // ✅ Panggil Controller untuk delete
+                bukuController.HapusBuku(idBukuTerpilih);
+                MessageBox.Show("Data berhasil dihapus");
+                LoadBuku();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
-            MessageBox.Show("Data berhasil dihapus");
+        private void dataGridViewBuku_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvBuku.Rows[e.RowIndex];
+                idBukuTerpilih = Convert.ToInt32(row.Cells["id_buku"].Value);
+                txtJudul.Text = row.Cells["judul"].Value.ToString();
+                txtPenulis.Text = row.Cells["penulis"].Value.ToString();
+                txtPenerbit.Text = row.Cells["penerbit"].Value.ToString();
+                txtTahun.Text = row.Cells["tahun_terbit"].Value.ToString();
+                txtStok.Text = row.Cells["stok"].Value.ToString();
+
+                // Handle kategori safely
+                if (row.Cells["nama_kategori"].Value != null)
+                {
+                    cbKategori.Text = row.Cells["nama_kategori"].Value.ToString();
+                }
+            }
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
             LoadBuku();
+        }
+
+        private void txtCari_TextChanged(object sender, EventArgs e)
+        {
+            dgvBuku.DataSource = bukuController.CariBuku(txtCari.Text);
         }
 
         private void btnExportExcel_Click(object sender, EventArgs e)
@@ -239,8 +212,6 @@ namespace Tugas_Besar_PBO.NET.view
 
                 void ExportToExcel(DataGridView dgv, string filePath)
                 {
-
-                   
                     using (ExcelPackage package = new ExcelPackage())
                     {
                         ExcelWorksheet ws = package.Workbook.Worksheets.Add("Koleksi Buku");
@@ -268,7 +239,6 @@ namespace Tugas_Besar_PBO.NET.view
                         package.SaveAs(fi);
                     }
                 }
-
             }
         }
     }

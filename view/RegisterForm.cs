@@ -18,6 +18,7 @@ namespace Tugas_Besar_PBO.NET.view
         public RegisterForm()
         {
             InitializeComponent();
+            this.Icon = AppIcon.GetIcon();
         }
 
         private void btnRegister_Click(object sender, EventArgs e)
@@ -83,6 +84,13 @@ namespace Tugas_Besar_PBO.NET.view
         private void chkShowPassword_CheckedChanged(object sender, EventArgs e)
         {
             txtPassword.UseSystemPasswordChar = !chkShowPassword.Checked;
+        }
+
+        private void btnKeLogin_Click(object sender, EventArgs e)
+        {
+            LoginForm login = new LoginForm();
+            login.Show();
+            this.Close();
         }
     }
 }

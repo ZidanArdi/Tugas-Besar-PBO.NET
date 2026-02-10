@@ -73,50 +73,7 @@ namespace Tugas_Besar_PBO.NET.controller
                 return false;
             }
         }
-
-        public DataTable ShowBuku()
-        {
-            DataTable dt = new DataTable();
-            try
-            {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
-                    // Alias digunakan agar header DataGridView rapi
-                    string query = "SELECT id_buku AS 'ID', judul_buku AS 'Judul', kategori AS 'Kategori', " +
-                                   "penulis AS 'Penulis', penerbit AS 'Penerbit', tahun_terbit AS 'Tahun', " +
-                                   "stok AS 'Stok' FROM buku";
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-                    MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-                    da.Fill(dt);
-                }
-            }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
-            return dt;
-        }
-
-        // Method untuk Input Buku Baru
-        public bool TambahBuku(string judul, string kategori, string penulis, string penerbit, int tahun, int stok)
-        {
-            try
-            {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = "INSERT INTO buku (judul_buku, kategori, penulis, penerbit, tahun_terbit, stok) " +
-                                   "VALUES (@judul, @kat, @pen, @pbt, @thn, @stok)";
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@judul", judul);
-                    cmd.Parameters.AddWithValue("@kat", kategori);
-                    cmd.Parameters.AddWithValue("@pen", penulis);
-                    cmd.Parameters.AddWithValue("@pbt", penerbit);
-                    cmd.Parameters.AddWithValue("@thn", tahun);
-                    cmd.Parameters.AddWithValue("@stok", stok);
-                    return cmd.ExecuteNonQuery() > 0;
-                }
-            }
-            catch (Exception ex) { MessageBox.Show(ex.Message); return false; }
-        }
+        // Method ShowBuku() dan TambahBuku() telah dipindahkan ke BukuController.cs
 
     }
 }
